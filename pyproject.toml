@@ -1,0 +1,24 @@
+[project]
+name = "procedure_classifier"
+version = "0.1.0"
+description = "automated surgical procedure classification"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+  {name = "Feiyang Huang"}
+]
+
+dependencies = [
+    "pandas",
+    "torch==2.6.0",
+    "huggingface_hub",
+    "transformers[torch]",
+    "datasets",
+    "accelerate",
+    "tqdm",
+    "bitsandbytes",
+]
+
+[tool.pip]
+extra-index-urls = ["https://pypi.nvidia.com"]
