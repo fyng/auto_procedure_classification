@@ -12,13 +12,17 @@ authors = [
 dependencies = [
     "pandas",
     "torch==2.6.0",
-    "huggingface_hub",
     "transformers[torch]",
+    "huggingface_hub",
     "datasets",
+    "bitsandbytes",
     "accelerate",
     "tqdm",
-    "bitsandbytes",
+    "matplotlib",
 ]
 
 [tool.pip]
 extra-index-urls = ["https://pypi.nvidia.com"]
+
+[tool.setuptools.packages.find]
+exclude = ["log*", "hf_cache*"]

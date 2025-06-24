@@ -12,4 +12,53 @@ BIOPSY TESTIS INCISIONAL
 COLONOSCOPY W/CONTROL OF BLEEDING                                                                                                                     
 UGI ENDOSCOPY W/ TRANSENDOSCOPIC ULTRASOUND INTRAMURAL OR TRANSMURAL FINE NEEDLE ASPIRATION/ BIOPSY                                                   
 UPPER GI ENDO INCL ESOPHAGUS/STOMACH/DUODENUM/JEJUNUM W/ BIOPSY SINGLE OR MULTIPLE                                                                    
-DIRECT LARYNGOSCOPY DIAGNOSTIC    
+DIRECT LARYNGOSCOPY DIAGNOSTIC                                                                                                                        
+CERVICAL LYMPHADENECTOMY (MODIFIED RADICAL NECK)                                                                                                      
+RESECTION OF RECURRANT OVRIAN, TUBAL, PRIMARY PERITONEAL, UTERINE MALIGNANCY, WITH OMENTECTOMY                                                        
+CYSTECTOMY PARTIAL W/ REIMPLANTATION URETER/S INTO BLADDER                                                                                            
+EXPLORATORY LAPAROTOMY/ EXPLORATORY CELIOTOMY                                                                                                         
+VA PLACE MEDIPORT CHEST SINGLE LUMEN                                                                                                                  
+VA PLACE MEDIPORT CHEST SINGLE LUMEN
+UGI ENDOSCOPY W/ DRAINAGE PEG PLACEMENT                                                                                                               
+CYSTOSCOPY, WITH TURB                                                                                                                                 
+IR VA CHEST PORT PLACEMENT - SINGLE LUMEN
+CYSTECTOMY, WITH NEOBLADDER CREATION                                                                                                                  
+ABSCESS CATHETER PLACE                                                                                                                                
+IR ABSCESS CATHETER PLACE
+ABSCESS CATHETER CHECK                                                                                                                                
+IR ABSCESS CATHETER CHECK
+NBB NEEDLE BIOPSY BODY LUNG/PLEURA CT                                                                                                                 
+NEEDLE BIOPSY BODY LUNG/PLEURA
+EXCISION SINGLE BREAST LESION IDENTIFIED W/ PRE-OP RADIOLOGICAL MARKER                                                                                
+NBB NEEDLE BIOPSY BODY LIVER                                                                                                                          
+IR NEEDLE BIOPSY BODY LIVER
+SIGMOIDOSCOPY DIAGNOSTIC---FLEXIBLE                                                                                                                   
+BRONCHOSCOPY W/ TRANSBRONCHIAL NEEDLE ASPIRATION BIOPSY---FLEXIBLE                                                                                    
+ENDOBRONCHIAL ULTRASOUND DURING BRONCHOSCOPIC DIAGNOSTIC OR THERAPRUTIC INTERVENTION                                                                  
+FINE NEEDLE ASPIRATION W/IMAGE GUIDANCE                                                                                                               
+NBB NEEDLE BIOPSY BODY SOFT TISSUE                                                                                                                    
+IR NEEDLE BIOPSY BODY SOFT TISSUE US
+TUNICA VAGINALIS HYDROCELE REPAIR                                                                                                                     
+NBB NEEDLE BIOPSY BODY ABD/RETRO                                                                                                                      
+IR NEEDLE BIOPSY BODY ABD/RETRO
+NBB NEEDLE BIOPSY BODY PELVIS                                                                                                                         
+IR NEEDLE BIOPSY BODY PELVIS
+BIOPSY/ EXCISION AXILLARY LYMPH NODE/ S DEEP                                                                                                          
+LAPAROSCOPY DIAGNOSTIC                                                                                                                                
+INSERTION OF INDWELLING TUNNELED PLEURAL CATHETER WITH CUFF                                                                                           
+RADIOLOGICAL GUIDANCE, FOR PERCUTANEOUS DRAINAGE, WITH PLACEMENT OF CATHETER, RADIOLOGICAL SUPERVISION AND INTERPRETATION                             
+IR NEEDLE BIOPSY BODY LUNG/PLEURA
+EXTRACTION SINGLE TOOTH TREATMENT PREPARATION                                                                                                         
+EXTRACTION EACH ADDITIONAL TOOTH TREATMENT PREPARATION                                                                                                
+COLONOSCOPY - AVERAGE RISK                                                                                                                            
+PELVIC EXAM UNDER ANESTHESIA                                                                                                                          
+DILATATION AND CURETTAGE DIAGNOSTIC                                                                                                                   
+HYSTEROSCOPY POLYPECTOMY W/ D AND C---FLEXIBLE                                                                                                        
+ROBOTIC PROSTATECTOMY                                                                                                                                 
+ROBOTICALLY (XI MODEL) ASSISTED  PROCEDURE                                                                                                            
+ROBOTIC  BIL TOTAL PELVIC LYMPHADENECTOMY                                                                                                             
+COLONOSCOPY -HIGH RISK                                                                                                                                
+INTRAOPERATIVE IDENTIFICATION MAPPING OF SENTINEL LYMPH NODE INCLUDES INJECTION OF NON-RADIOACTIVE DYE, WHEN PERFORMED                                
+UNILAT-MASTECTOMY SIMPLE/COMPLETE                                                                                                                     
+CONTINUOUS INTRAOP NEUROPHYSIOLOGY MONITORING, ONE ON ONE MONITORING REQUIRING PERSONAL ATTENDANCE, EACH15 MINUTES                                    
+FLUOROSCOPIC GUIDANCE AND LOCALIZATION OF NEEDLE/CATH TIP FOR SPINE/PARASPINOUS DIAGNOSTIC/THERAPEUTIC INJECTION PROCEDURE INCLUDING NEUROLYTIC AGENT 

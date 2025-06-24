@@ -1,4 +1,5 @@
 import os
+from typing import Any
 import random
 import pandas as pd
 from tqdm import tqdm
@@ -129,8 +130,8 @@ class ProcedureClassifier:
     def __init__(
         self, 
         model_id: str = "google/medgemma-27b-text-it", 
+        batch_size: int = 16,
         categories: list[str] | None = None,
-        batch_size: int = 16
     ):
         """
         Initialize the classifier with the specified model.
@@ -172,9 +173,8 @@ class ProcedureClassifier:
             model=self.model_id,
             model_kwargs = model_kwargs
         )
-        self.pipe.model.generation_config.do_sample = False # greedy decoding
-    
         print("Model loaded successfully!")
+        
         
     def run_inference(self, message: list[dict[str, str]]) -> str:
         """
@@ -198,7 +198,10 @@ class ProcedureClassifier:
         return response.strip().strip('\n')
     
     
-    def run_batch_inference(self, dataset: KeyDataset) -> list[str]:
+    def run_batch_inference(
+        self, 
+        messages: list[Any], 
+    ) -> list[str]:
         """
         Run inference in batches for speedup using the pipeline.
 
@@ -208,14 +211,30 @@ class ProcedureClassifier:
         Returns:
             List of responses for each message
         """
-        # Use pipeline for batched inference
         responses = []
-        for output in tqdm(self.pipe(dataset, max_new_tokens=1500, do_sample=False, batch_size=self.batch_size, return_full_text=False), desc="Processing batches"):
-            response = output[0]['generated_text']
-            if "<unused95>" in response:
-                thought, response = response.split("<unused95>")
-            responses.append(response.strip().strip('\n'))
-
+        total_batches = (len(messages) + self.batch_size - 1) // self.batch_size 
+        for chunk in tqdm(range(total_batches), desc="Batches"):
+            start_idx = self.batch_size * chunk
+            end_idx = min(self.batch_size * (chunk + 1), len(messages))
+            prompts = messages[start_idx:end_idx]
+            
+            if not prompts:  # Skip empty batches
+                continue
+                
+            batch = KeyDataset(Dataset.from_dict({"messages": prompts}), "messages")
+            outputs = self.pipe(
+                batch,
+                max_new_tokens=1500,
+                do_sample=False,
+                batch_size=self.batch_size,
+                return_full_text=False
+            )
+            
+            for output in outputs:
+                response = output[0]['generated_text']                    
+                if "<unused95>" in response:
+                    thought, response = response.split("<unused95>")
+                responses.append(response.strip().strip('\n'))
         return responses
     
     
@@ -237,10 +256,9 @@ class ProcedureClassifier:
         with open(file_path, 'r') as f:
             procedures = [line.strip() for line in f if line.strip()]
         messages = [create_classification_prompt(self.categories, proc) for proc in procedures]        
-        dataset = Dataset.from_dict({"messages": messages})
 
         # Use pipeline for batched inference
-        responses = self.run_batch_inference(KeyDataset(dataset, 'messages'))
+        responses = self.run_batch_inference(messages)
                     
         # Convert back to DataFrame
         results_df = pd.DataFrame({
@@ -290,8 +308,7 @@ class ProcedureClassifier:
             message = create_validation_prompt(self.categories, procedure, initial_category, examples_filtered)
             messages.append(message)
         
-        dataset = Dataset.from_dict({"messages": messages})
-        validation_data = self.run_batch_inference(KeyDataset(dataset, 'messages'))
+        validation_data = self.run_batch_inference(messages)
         
         validation_df = initial_df.copy()
         validation_df['validated_purpose'] = validation_data

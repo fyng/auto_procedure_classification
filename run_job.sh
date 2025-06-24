@@ -15,4 +15,4 @@ cd /data1/tanseyw/projects/feiyang/auto_procedure_classification
 source ~/.bashrc
 mamba activate classifier
 
-python procedure_classification.py
+python src/procedure_classification.py
