@@ -198,3 +198,10 @@ hf_cache/
 
 # Logging
 log/
+
+# data
+task_*/*.txt
+*.csv
+
+# my own scripts
+*.sh

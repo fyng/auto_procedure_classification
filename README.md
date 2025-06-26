@@ -1,17 +1,6 @@
 # Medical Procedure Classification Pipeline
 This pipeline uses the google/medgemma-27b-text-it model to classify cancer surgery procedure descriptions into purpose categories.
 
-BUILD WITH VIBE-CODING! (with minimal interventions)
-
-The model classifies descriptions of surgical procedures in an oncology setting into one of these categories:
-- **Diagnostics**: Biopsies, diagnostic procedures
-- **Tumor removal**: Resections, excisions, tumor removal procedures  
-- **Hemostasis**: Bleeding control procedures
-- **Access**: Port placement, catheter insertion, access procedures
-- **Therapeutic Ablation/Embolization**: Ablation and embolization procedures
-- **Reconstruction/Repair**: Repair and reconstruction procedures
-- **Other**: Procedures that don't fit the above categories
-
 ## Set-up
 From within a virtual environment, run
 ```
@@ -29,21 +18,20 @@ pip install -Ue .
 - around 200GB slurm memory
 
 ## Usage
-1. Run the test the pipeline. This will also test a bunch of batch sizes to determine the optimal batch size for the full run. 
+1. Run the testing pipeline. This will run the job config complate in `/task_test`. The test will also plot a performance curve to help determine the optimal batch size for the full run. 
 ```bash
-python src/test.py
+python test.py
 ```
 **Runtime curve on Nvidia H100, bfloat16 without quantization**
-![](test_out/batch_size_optim.png)
+![](task_test/out/batch_size_optim.png)
 
-2. Run the full classification pipeline on all procedures in `procedure_name.txt`:
+2. Run the full classification pipeline. For sample job templates, refer to `/task_surgery_classification` and `/task_radiation_site`:
 ```bash
-python procedure_classification.py
+python run_task.py task_surgery_classification
 ```
-
 * iris cluster:
 ```bash
-sbatch run_job.sh
+sbatch run_job.sh task_surgery_classification
 ```
 
 

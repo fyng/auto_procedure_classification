@@ -1,0 +1,48 @@
+{
+    "initial_classification": {
+        "description": "initial classification of surgery description into categories",
+        "classes": [
+            "Diagnostics",
+            "Tumor removal",
+            "Hemostasis",
+            "Access",
+            "Therapeutic Ablation/Embolization",
+            "Reconstruction/Repair",
+            "Other"
+        ],
+        "data_file": "test.txt",
+        "data_fields": [
+            "DATA"
+        ],
+        "system_prompt": "You are a helpful medical assistant with expertise in surgery and oncology.",
+        "user_prompt": "Classify the following surgical procedure into one of these purpose categories: {classes}. The procedure description is {DATA}. Provide only a single category name and nothing else. \n",
+        "thinking_mode": false,
+        "max_new_tokens": 200,
+        "batch_size": 32,
+        "do_sample": false,
+        "return_full_text": false
+    },
+    "refinement": {
+        "description": "refinement of initial classification in thinking mode",
+        "classes": [
+            "Diagnostics",
+            "Tumor removal",
+            "Hemostasis",
+            "Access",
+            "Therapeutic Ablation/Embolization",
+            "Reconstruction/Repair",
+            "Other"
+        ],
+        "data_fields": [
+            "DATA",
+            "INITIAL_CLASSIFICATION_RESULT"
+        ],
+        "system_prompt": "You are a helpful medical assistant with expertise in surgery and oncology.",
+        "user_prompt": "Refine the initial classification of the surgical procedure into one of these purpose categories: {classes}. The procedure description is {DATA}. The initial classification was {INITIAL_CLASSIFICATION_RESULT}. You must give a final answer. Once you've reached a final answer, report only a single category name and nothing else. \n",
+        "thinking_mode": true,
+        "max_new_tokens": 1600,
+        "batch_size": 32,
+        "do_sample": false,
+        "return_full_text": false
+    }
+}
