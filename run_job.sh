@@ -4,7 +4,7 @@
 #SBATCH --gres=gpus:h100:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=100G
-#SBATCH --time=23:00:00
+#SBATCH --time=16:00:00
 #SBATCH --output=log/classifier.out
 #SBATCH --error=log/classifier.err
 

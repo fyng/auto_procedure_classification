@@ -29,15 +29,23 @@ pip install -Ue .
 - around 200GB slurm memory
 
 ## Usage
-### Quick Test (recommended first step)
-Test the pipeline with the first 5 procedures:
+1. Run the test the pipeline. This will also test a bunch of batch sizes to determine the optimal batch size for the full run. 
 ```bash
-python test.py
+python src/test.py
 ```
+**Runtime curve on Nvidia H100, bfloat16 without quantization**
+![](test_out/batch_size_optim.png)
 
-### Full Classification
-Classify all procedures in `procedure_name.txt`:
+2. Run the full classification pipeline on all procedures in `procedure_name.txt`:
 ```bash
 python procedure_classification.py
 ```
 
+* iris cluster:
+```bash
+sbatch run_job.sh
+```
+
+
+## Future work
+- Prompt tuning with https://github.com/stanfordnlp/dspy

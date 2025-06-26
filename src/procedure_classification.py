@@ -1,6 +1,6 @@
 import os
+import gc
 from typing import Any
-import random
 import pandas as pd
 from tqdm import tqdm
 import getpass
@@ -9,8 +9,6 @@ import torch
 os.environ['HF_DATASETS_CACHE'] = os.path.join(os.getcwd(), 'hf_cache')
 os.environ['HF_HUB_CACHE'] = os.path.join(os.getcwd(), 'hf_cache')
 from transformers import pipeline, BitsAndBytesConfig
-from transformers.pipelines.pt_utils import KeyDataset
-from datasets import Dataset
 from huggingface_hub import login
 
 
@@ -70,7 +68,7 @@ def create_classification_prompt(categories, procedure_description: str) -> list
     messages = [
         {
             "role": "system",
-            "content": "SYSTEM INSTRUCTION: think silently if needed. You are a helpful medical assistant with expertise in surgical procedures.",
+            "content": "You are a helpful medical assistant with expertise in surgery and oncology.",
         },
         {
             "role": "user", 
@@ -81,7 +79,7 @@ def create_classification_prompt(categories, procedure_description: str) -> list
     return messages
 
     
-def create_validation_prompt(categories, procedure_description: str, initial_category: str, example_procedures: list[str]) -> list[dict]:
+def create_validation_prompt(categories, procedure_description: str, initial_category: str) -> list[dict]:
     """
     Create a validation prompt with examples from the initially assigned category.
     
@@ -92,25 +90,20 @@ def create_validation_prompt(categories, procedure_description: str, initial_cat
         
     Returns:
         Messages list for the LLM
-    """
-    examples_text = "\n".join([f"- {proc}" for proc in example_procedures])
-    
+    """    
     validation_instruction = (
-        f"You are validating the classification of a surgical procedure. "
+        f"You have been asked to give a second opinion on the classification of a surgical procedure. "
+        f"Procedure to validate: {procedure_description}. "
         f"The procedure was initially classified as '{initial_category}'. "
-        f"Here are 5 example procedures that were also classified as '{initial_category}':\n\n"
-        f"{examples_text}\n\n"
-        f"Now, please re-classify the following procedure into one of these categories: "
+        f"Please re-classify the following procedure into one of these categories: "
         f"{categories}. "
-        f"Consider whether it truly belongs with the examples shown above, or if it should be in a different category. "
         f"Answer with a single category name.\n\n"
-        f"Procedure to validate: {procedure_description}"
     )
     
     messages = [
         {
             "role": "system",
-            "content": "SYSTEM INSTRUCTION: think silently if needed. You are a helpful medical assistant with expertise in surgical procedures. You are careful and precise in your classifications."
+            "content": "SYSTEM INSTRUCTION: think silently if needed. You are a helpful medical assistant with expertise in surgery and oncology."
         },
         {
             "role": "user", 
@@ -130,8 +123,9 @@ class ProcedureClassifier:
     def __init__(
         self, 
         model_id: str = "google/medgemma-27b-text-it", 
-        batch_size: int = 16,
+        batch_size: int = 8,
         categories: list[str] | None = None,
+        quantization_bits: int | None = None,
     ):
         """
         Initialize the classifier with the specified model.
@@ -144,6 +138,8 @@ class ProcedureClassifier:
         self.pipe = None
         self.categories = categories if categories else self.default_categories()
         self.batch_size = batch_size
+        self.quantization_bits = quantization_bits
+
 
     def default_categories(self) -> list[str]:
         """Return default categories for procedure classification."""
@@ -152,6 +148,13 @@ class ProcedureClassifier:
             'Access', 'Therapeutic Ablation/Embolization',
             'Reconstruction/Repair', 'Other'
         ]
+
+    def set_batch_size(self, batch_size: int):
+        """Set the batch size for inference."""
+        if batch_size <= 0:
+            raise ValueError("Batch size must be a positive integer")
+        self.batch_size = batch_size
+
         
     def load_model(self):
         """Load the model pipeline."""
@@ -164,8 +167,10 @@ class ProcedureClassifier:
         model_kwargs = dict(
             torch_dtype=torch.bfloat16,
             device_map="cuda",
-            quantization_config=BitsAndBytesConfig(load_in_4bit=True) # 4-bit quantization
         )
+        if self.quantization_bits is not None:
+            assert self.quantization_bits in (4, 8), "quantization_bits must be 4 or 8"
+            model_kwargs['quantization_config'] = BitsAndBytesConfig(load_in_4bit=(self.quantization_bits==4), load_in_8bit=(self.quantization_bits==8))
         
         # Create pipeline for batched inference
         self.pipe = pipeline(
@@ -174,33 +179,12 @@ class ProcedureClassifier:
             model_kwargs = model_kwargs
         )
         print("Model loaded successfully!")
-        
-        
-    def run_inference(self, message: list[dict[str, str]]) -> str:
-        """
-        Run single inference using the pipeline.
-        """ 
-        if self.pipe is None:
-            raise ValueError("Model not loaded. Call load_model() first.")
-        
-        output = self.pipe(
-            message,
-            max_new_tokens=1500,
-            do_sample=False,
-            return_full_text=False
-        )
-        
-        response = output[0]['generated_text']
-        # Handle the thought/response split if it exists
-        if "<unused95>" in response:
-            thought, response = response.split("<unused95>")
-        
-        return response.strip().strip('\n')
     
     
     def run_batch_inference(
         self, 
         messages: list[Any], 
+        max_new_tokens: int = 1500
     ) -> list[str]:
         """
         Run inference in batches for speedup using the pipeline.
@@ -221,10 +205,9 @@ class ProcedureClassifier:
             if not prompts:  # Skip empty batches
                 continue
                 
-            batch = KeyDataset(Dataset.from_dict({"messages": prompts}), "messages")
             outputs = self.pipe(
-                batch,
-                max_new_tokens=1500,
+                prompts,
+                max_new_tokens=max_new_tokens,
                 do_sample=False,
                 batch_size=self.batch_size,
                 return_full_text=False
@@ -233,8 +216,9 @@ class ProcedureClassifier:
             for output in outputs:
                 response = output[0]['generated_text']                    
                 if "<unused95>" in response:
-                    thought, response = response.split("<unused95>")
+                    _, response = response.split("<unused95>")
                 responses.append(response.strip().strip('\n'))
+                                
         return responses
     
     
@@ -258,7 +242,7 @@ class ProcedureClassifier:
         messages = [create_classification_prompt(self.categories, proc) for proc in procedures]        
 
         # Use pipeline for batched inference
-        responses = self.run_batch_inference(messages)
+        responses = self.run_batch_inference(messages, max_new_tokens=200)
                     
         # Convert back to DataFrame
         results_df = pd.DataFrame({
@@ -269,7 +253,7 @@ class ProcedureClassifier:
         return results_df
         
     
-    def validate_classifications(self, initial_df: pd.DataFrame, examples_per_category: int = 5) -> pd.DataFrame:
+    def validate_classifications(self, initial_df: pd.DataFrame) -> pd.DataFrame:
         """
         Validate all classifications using batch processing with context examples.
         
@@ -285,30 +269,16 @@ class ProcedureClassifier:
             
         print("Preparing validation data...")
         
-        # Group procedures by category to get examples
-        category_examples = {}
-        for category in self.categories:
-            category_procedures = initial_df[initial_df['purpose'] == category]['procedure_name'].tolist()
-            if len(category_procedures) >= examples_per_category:
-                category_examples[category] = random.sample(category_procedures, examples_per_category)
-            else:
-                category_examples[category] = category_procedures
-        
         # Prepare validation dataset
         messages = []
-        for idx, row in initial_df.iterrows():
+        for _, row in initial_df.iterrows():
             procedure = str(row['procedure_name'])
             initial_category = str(row['purpose'])
-            
-            # Get examples for this category
-            examples = category_examples.get(initial_category, [])
-            # Remove the current procedure from examples if it's there
-            examples_filtered = [ex for ex in examples if ex != procedure][:examples_per_category]
-            
-            message = create_validation_prompt(self.categories, procedure, initial_category, examples_filtered)
+            message = create_validation_prompt(self.categories, procedure, initial_category)
             messages.append(message)
         
-        validation_data = self.run_batch_inference(messages)
+        # validate initial classification, use model in thinking mode
+        validation_data = self.run_batch_inference(messages, max_new_tokens=1600)
         
         validation_df = initial_df.copy()
         validation_df['validated_purpose'] = validation_data
@@ -340,30 +310,32 @@ class ProcedureClassifier:
 def main():
     """Main function to run the classification pipeline."""
     # Initialize classifier
-    classifier = ProcedureClassifier()
-    
-    # Load the model
+    classifier = ProcedureClassifier(batch_size=16)
     classifier.load_model()
     
     # Classify procedures from the input file using efficient method
     results_df = classifier.classify_procedures_from_file('procedure_name.txt')
+    
+    # NOTE: need to reset compiled graph 
+    # when re-using pipeline with different max_new_tokens setting
+    torch._dynamo.reset()
+    
     results_df.to_csv('procedure_classifications_initial.csv', index=False)
     print("Initial classifications saved to 'procedure_classifications_initial.csv'")
-    
     # Display results
     print("\nInitial Classification Results:")
     print(results_df.head(10))
-    
     # Show initial category distribution
     print("\nInitial Category Distribution:")
     print(results_df['purpose'].value_counts())
     
-    # Validate classifications with context examples
+    # Optional validation phase with model in thinking mode
     print("\n" + "="*60)
     print("STARTING VALIDATION PHASE")
     print("="*60)
-    
-    validation_df = classifier.validate_classifications(results_df, examples_per_category=5)
+
+    validation_df = classifier.validate_classifications(results_df)
+    torch._dynamo.reset()
     
     # Save validation results
     validation_output_file = 'procedure_classifications_validated.csv'
