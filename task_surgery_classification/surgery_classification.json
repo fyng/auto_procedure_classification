@@ -3,10 +3,11 @@
         "description": "initial classification of surgery description into categories",
         "classes": [
             "Tumor removal",
-            "Ablation or Embolization",
+            "Ablation, Embolization, Electroporation",
+            "Vertebroplasty, Kyphoplasty",
             "Access",
             "Diagnostic",
-            "Other, Not cancer related"
+            "Other, Non-curative"
         ],
         "data_file": "surgery_classification.txt",
         "data_fields": ["DATA"],
@@ -22,14 +23,15 @@
         "description": "refinement of initial classification in thinking mode",
         "classes": [
             "Tumor removal",
-            "Ablation or Embolization",
+            "Ablation, Embolization, Electroporation",
+            "Vertebroplasty, Kyphoplasty",
             "Access",
             "Diagnostic",
-            "Other, Not cancer related"
+            "Other, Non-curative"
         ],
         "data_fields": ["DATA", "INITIAL_CLASSIFICATION_RESULT"], 
         "system_prompt": "You are a helpful medical assistant with expertise in surgery and oncology.",
-        "user_prompt": "Refine the initial classification of the surgical procedure into one of these purpose categories: {classes}. The procedure description is {DATA}. It is initially classified as {INITIAL_CLASSIFICATION_RESULT}. Once you've reached a final answer, report only a single category name and nothing else. \n",
+        "user_prompt": "Refine the initial classification of the surgical procedure into one of these purpose categories: {classes}. The procedure description is {DATA}. It is initially classified as {INITIAL_CLASSIFICATION_RESULT}. You must give a final answer. Report only a single category name and nothing else. \n",
         "thinking_mode": true,
         "max_new_tokens": 1500,
         "batch_size": 16,
