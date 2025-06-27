@@ -38,5 +38,13 @@ sbatch run_job.sh task_surgery_classification
 ![](task_surgery_classification/classification_distributions.png)
 
 
+## Known failure modes
+- In thinking mode, model might fail to terminate gracefully with an answer.
+- If the input string is too short, under-specified, or hard to parse, the mode might fail to recognise it as relevant medical information. It can stall and ask for more info instead of performing the desired classification task
+- The model can hallucinate categories that are not user-specified. A second pass (refer to the refinement stage of [this pipeline](task_surgery_classification/surgery_classification.json)) typically resolves this.
+
+It is always good practice to manually validate the model's output before using it elsewhere.
+
+
 ## Future work
 - Prompt tuning with https://github.com/stanfordnlp/dspy
