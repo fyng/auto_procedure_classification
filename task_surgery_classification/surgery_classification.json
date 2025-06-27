@@ -2,12 +2,11 @@
     "initial_classification": {
         "description": "initial classification of surgery description into categories",
         "classes": [
-            "Diagnostics",
             "Tumor removal",
-            "Hemostasis",
-            "Access",
             "Ablation or Embolization",
-            "Other"
+            "Access",
+            "Diagnostic",
+            "Other, Not cancer related"
         ],
         "data_file": "surgery_classification.txt",
         "data_fields": ["DATA"],
@@ -22,12 +21,11 @@
     "refinement": {
         "description": "refinement of initial classification in thinking mode",
         "classes": [
-            "Diagnostics",
             "Tumor removal",
-            "Hemostasis",
-            "Access",
             "Ablation or Embolization",
-            "Other"
+            "Access",
+            "Diagnostic",
+            "Other, Not cancer related"
         ],
         "data_fields": ["DATA", "INITIAL_CLASSIFICATION_RESULT"], 
         "system_prompt": "You are a helpful medical assistant with expertise in surgery and oncology.",
