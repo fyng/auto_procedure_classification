@@ -68,7 +68,7 @@ def create_prompt(task_config: dict, data: dict[str, Any]) -> list[dict[str, str
     thinking_mode = task_config.get("thinking_mode", False)
     
     if thinking_mode:
-        sys_prompt = "SYSTEM INSTRUCTION: think silently if needed. Begin your thinking with <unused94>thought, and end it with <unused95>, then respond to the user. " + task_config["system_prompt"]
+        sys_prompt = "SYSTEM INSTRUCTION: think silently if needed. " + task_config["system_prompt"] + " Think in steps, be consize and direct. You must give a final answer."
     else:
         sys_prompt = task_config["system_prompt"]
     
