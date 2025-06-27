@@ -34,6 +34,9 @@ python run_task.py task_surgery_classification
 sbatch run_job.sh task_surgery_classification
 ```
 
+## Surgerical procedure classification task
+![](task_surgery_classification/classification_distributions.png)
+
 
 ## Future work
 - Prompt tuning with https://github.com/stanfordnlp/dspy
